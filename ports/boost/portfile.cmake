@@ -81,7 +81,7 @@ set(B2_OPTIONS
     --hash
     -q
 
-    --without-python
+    #--without-python
     threading=multi
 )
 
