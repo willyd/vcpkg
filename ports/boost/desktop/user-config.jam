@@ -5,3 +5,11 @@ using msvc : 14.0 : cl.exe :
 using msvc : 14.1 : cl.exe :
 <setup>echo
 ;
+
+using python
+     : # version
+     : @PYTHON_EXECUTABLE@
+     : @PYTHON_INCLUDE_DIRS@
+     : @PYTHON_LIBRARIES@
+     : # condition
+     ;
