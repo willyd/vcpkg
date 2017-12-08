@@ -1,0 +1,4 @@
+Source: caffe
+Version: 1.0.0
+Build-Depends: boost, gflags, glog, hdf5, lmdb, protobuf, openblas
+Description: Caffe2 is a lightweight, modular, and scalable deep learning framework.
