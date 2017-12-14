@@ -7,10 +7,28 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO willyd/caffe
-    REF 12c2320ead6399bc28bd589baa0d834ee94a3b83
-    SHA512 bfee5a6a0a16f9131127d02ddce587092891a16750705c8f8a6211c598f98a14409ddb3bd7ff5f1d5a233f4b6a504121fcaf156a9e0d5398503ead5f09da941c
+    REF cdf0f3185d076a894410720a2d806c250daca7a6
+    SHA512 42d0a1c3b837adad8504227fa4ba16bca19dcadf540c87b3b106f48825137d8cac8a4abc9bba7e450a2870d8b45b5d6098a41dbb31555fc4847fdf608cc41eef
     HEAD_REF vcpkg
 )
+
+if("cuda" IN_LIST FEATURES)
+    set(CPU_ONLY OFF)
+else()
+    set(CPU_ONLY ON)
+endif()
+
+if("mkl" IN_LIST FEATURES)
+    set(BLAS MKL)
+    set(ProgramFilesx86 "ProgramFiles(x86)")
+    set(INTEL_ROOT $ENV{${ProgramFilesx86}}/IntelSWTools/compilers_and_libraries/windows)
+    if(NOT EXISTS ${INTEL_ROOT})
+        message(FATAL_ERROR "Could not find MKL. Build caffe with the mkl feature or install MKL.")
+    endif()
+    set(BLAS_PATH -DINTEL_ROOT:PATH=${INTEL_ROOT})
+else()
+    set(BLAS Open)
+endif()
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
@@ -26,9 +44,9 @@ vcpkg_configure_cmake(
     -DWITH_OPENCV=OFF
     -DBUILD_matlab=OFF
     -DBUILD_docs=OFF
-    # Change to MKL to use MKL
-    -DBLAS=Open
-    -DCPU_ONLY=ON
+    -DBLAS=${BLAS}
+    ${BLAS_PATH}
+    -DCPU_ONLY=${CPU_ONLY}
     -DBUILD_TEST=OFF
     -DUSE_LEVELDB=OFF
     -DUSE_OPENCV=ON

@@ -1,4 +1,11 @@
 Source: caffe
 Version: 1.0.0
 Build-Depends: boost, gflags, glog, hdf5, lmdb, protobuf, openblas
-Description: Caffe2 is a lightweight, modular, and scalable deep learning framework.
+Description: Caffe: a fast open framework for deep learning.
+
+Feature: cuda
+Description: Build caffe with CUDA support
+Build-Depends: cuda
+
+Feature: mkl
+Description: Build caffe using BLAS as mkl backend
