@@ -9,3 +9,7 @@ Build-Depends: cuda
 
 Feature: mkl
 Description: Build caffe using BLAS as mkl backend
+
+Feature: opencv
+Description: Build caffe with opencv
+Build-Depends: opencv

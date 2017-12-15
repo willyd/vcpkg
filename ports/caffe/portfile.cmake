@@ -1,5 +1,5 @@
 if (VCPKG_TARGET_ARCHITECTURE STREQUAL x86)
-    message(FATAL_ERROR "Caffe2 cannot be built for the x86 architecture")
+    message(FATAL_ERROR "Caffe cannot be built for the x86 architecture")
 endif()
 
 include(vcpkg_common_functions)
@@ -23,11 +23,16 @@ if("mkl" IN_LIST FEATURES)
     set(ProgramFilesx86 "ProgramFiles(x86)")
     set(INTEL_ROOT $ENV{${ProgramFilesx86}}/IntelSWTools/compilers_and_libraries/windows)
     if(NOT EXISTS ${INTEL_ROOT})
-        message(FATAL_ERROR "Could not find MKL. Build caffe with the mkl feature or install MKL.")
+        message(FATAL_ERROR "Could not find MKL. Build caffe without the mkl feature or install MKL.")
     endif()
-    set(BLAS_PATH -DINTEL_ROOT:PATH=${INTEL_ROOT})
 else()
     set(BLAS Open)
+endif()
+
+if("opencv" IN_LIST FEATURES)
+    set(USE_OPENCV ON)
+else()
+    set(USE_OPENCV OFF)
 endif()
 
 vcpkg_configure_cmake(
@@ -41,15 +46,13 @@ vcpkg_configure_cmake(
     -DBUILD_python=OFF
     -DBUILD_python_layer=OFF
     -Dpython_version=3.6
-    -DWITH_OPENCV=OFF
     -DBUILD_matlab=OFF
     -DBUILD_docs=OFF
     -DBLAS=${BLAS}
-    ${BLAS_PATH}
     -DCPU_ONLY=${CPU_ONLY}
     -DBUILD_TEST=OFF
     -DUSE_LEVELDB=OFF
-    -DUSE_OPENCV=ON
+    -DUSE_OPENCV=${USE_OPENCV}
     -DUSE_LMDB=ON
     -DUSE_NCCL=OFF
 )
