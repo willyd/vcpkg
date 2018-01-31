@@ -84,6 +84,19 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/include/caffe2/contrib/libopencl-stu
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/include/caffe2/contrib/docker-ubuntu-14.04)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/include/caffe2/binaries)
 
+# Remove this
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/share/contrib/nnpack
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/share/contrib/binaries/caffe2_benchmark
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/mobile/contrib/libvulkan-stub/src
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/mobile/contrib/libopencl-stub/src
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/contrib/tensorboard
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/contrib/script/examples
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/include/caffe2/contrib/aten/docs
+
+# Remove this too
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/lib/caffe2_module_test_dynamic.dll
+# C:/Users/guillaume/work/vcpkg/packages/caffe2_x64-windows/debug/lib/caffe2_module_test_dynamic.dll
+
 # Move bin to tools
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools)
 file(GLOB BINARIES ${CURRENT_PACKAGES_DIR}/bin/*.exe)
