@@ -1,0 +1,83 @@
+diff --git a/caffe/proto/CMakeLists.txt b/caffe/proto/CMakeLists.txt
+index a5d3f03..8b7b8d0 100644
+--- a/caffe/proto/CMakeLists.txt
++++ b/caffe/proto/CMakeLists.txt
+@@ -6,7 +6,12 @@ caffe2_protobuf_generate_cpp_py(Caffe_PROTO_SRCS Caffe_PROTO_HEADERS Caffe_PROTO
+ 
+ add_library(Caffe_PROTO OBJECT ${Caffe_PROTO_HEADERS} ${Caffe_PROTO_SRCS})
+ if (MSVC)
++  if(BUILD_SHARED_LIBS)
++    set(Caffe2_API_DEFINE "-DCAFFE2_API=__declspec(dllexport)")
++  else()
++    set(Caffe2_API_DEFINE "-DCAFFE2_API=")
++  endif()
+   target_compile_definitions(
+-      Caffe_PROTO PRIVATE "-DCAFFE2_API=__declspec(dllexport)")
++      Caffe_PROTO PRIVATE ${Caffe2_API_DEFINE})
+ endif()
+ install(FILES ${Caffe_PROTO_HEADERS} DESTINATION include/caffe/proto)
+diff --git a/caffe2/core/logging.cc b/caffe2/core/logging.cc
+index d3e7e05..3524168 100644
+--- a/caffe2/core/logging.cc
++++ b/caffe2/core/logging.cc
+@@ -133,7 +133,7 @@ using fLB::FLAGS_logtostderr;
+ 
+ #endif // CAFFE2_USE_GFLAGS
+ 
+-CAFFE2_DEFINE_int(caffe2_log_level, google::ERROR,
++CAFFE2_DEFINE_int(caffe2_log_level, google::GLOG_ERROR,
+                   "The minimum log level that caffe2 will output.");
+ 
+ // Google glog's api does not have an external function that allows one to check
+@@ -150,15 +150,22 @@ bool IsGoogleLoggingInitialized();
+ namespace caffe2 {
+ bool InitCaffeLogging(int* argc, char** argv) {
+   if (*argc == 0) return true;
+-  if (!::google::glog_internal_namespace_::IsGoogleLoggingInitialized()) {
++#if !defined(_MSC_VER)
++  // This trick can only be used on UNIX platforms
++  if (!::google::glog_internal_namespace_::IsGoogleLoggingInitialized())
++#endif
++  {
+     ::google::InitGoogleLogging(argv[0]);
++#if !defined(_MSC_VER)
++  // This is never defined on Windows
+     ::google::InstallFailureSignalHandler();
++#endif
+   }
+   // If caffe2_log_level is set and is lower than the min log level by glog,
+   // we will transfer the caffe2_log_level setting to glog to override that.
+   FLAGS_minloglevel = std::min(FLAGS_caffe2_log_level, FLAGS_minloglevel);
+   // If caffe2_log_level is explicitly set, let's also turn on logtostderr.
+-  if (FLAGS_caffe2_log_level < google::ERROR) {
++  if (FLAGS_caffe2_log_level < google::GLOG_ERROR) {
+     FLAGS_logtostderr = 1;
+   }
+   // Also, transfer the caffe2_log_level verbose setting to glog.
+@@ -170,7 +177,7 @@ bool InitCaffeLogging(int* argc, char** argv) {
+ 
+ void ShowLogInfoToStderr() {
+   FLAGS_logtostderr = 1;
+-  FLAGS_minloglevel = std::min(FLAGS_minloglevel, google::INFO);
++  FLAGS_minloglevel = std::min(FLAGS_minloglevel, google::GLOG_INFO);
+ }
+ }  // namespace caffe2
+ 
+diff --git a/cmake/ProtoBuf.cmake b/cmake/ProtoBuf.cmake
+index 11a03d5..f02aa46 100644
+--- a/cmake/ProtoBuf.cmake
++++ b/cmake/ProtoBuf.cmake
+@@ -55,6 +55,13 @@ endfunction()
+ #
+ if (WIN32)
+   find_package(Protobuf NO_MODULE)
++  if(Protobuf_FOUND OR PROTOBUF_FOUND)
++    set(PROTOBUF_LIBRARIES protobuf::libprotobuf)
++    get_target_property(_protobuf_include_dir protobuf::libprotobuf
++                        INTERFACE_INCLUDE_DIRECTORIES)
++    set(PROTOBUF_INCLUDE_DIRS ${_protobuf_include_dir})
++    add_definitions(-DPROTOBUF_USE_DLLS)
++  endif()
+ elseif (ANDROID OR IOS)
+   custom_protobuf_find()
+   # Unfortunately, new protobuf does not support libprotoc and protoc

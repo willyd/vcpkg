@@ -12,15 +12,15 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO caffe2/caffe2
-    REF eab13a2d5c807bf5d49efd4584787b639a981b79
-    SHA512 505a8540b0c28329c4e2ce443ac8e198c1ee613eb6b932927ee9d04c8afdc95081f3c4581408b7097d567840427b31f6d7626ea80f27e56532f2f2e6acd87023
+    REF 4f534fad1af9f77d4f0496ecd37dafb382330223
+    SHA512 b2c1c8af00a9d2ba8b088f92bd1d73cb51e7365e44455edb7840bc2d6f96f9ba5ad7ccc7396598e6b3019f48de3f1223d26b62174e0b5a601bda8702d20b732a
     HEAD_REF master
 )
 
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
     PATCHES
-    ${CMAKE_CURRENT_LIST_DIR}/msvc-fixes.patch
+    ${CMAKE_CURRENT_LIST_DIR}/windows-patch.patch
 )
 
 if(VCPKG_CRT_LINKAGE STREQUAL static)
@@ -36,14 +36,14 @@ vcpkg_configure_cmake(
     -DBUILD_SHARED_LIBS=OFF
     # Set to ON to use python
     -DBUILD_PYTHON=OFF
-    -DUSE_STATIC_RUNTIME=${USE_STATIC_RUNTIME}
+    -DCAFFE2_USE_MSVC_STATIC_RUNTIME=${USE_STATIC_RUNTIME}
     -DUSE_GFLAGS=ON
     -DUSE_GLOG=ON
     # Cannot use OpenCV without USE_CUDA=ON right now
     -DUSE_OPENCV=OFF
     -DUSE_THREADS=ON
     # Uncomment to use MKL
-    # -DBLAS=MKL
+    -DBLAS=MKL
     -DUSE_CUDA=OFF
     -DUSE_FFMPEG=OFF
     -DUSE_GLOO=OFF
