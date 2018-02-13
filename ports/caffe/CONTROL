@@ -1,6 +1,6 @@
 Source: caffe
 Version: 1.0.0
-Build-Depends: boost, gflags, glog, hdf5, lmdb, protobuf, openblas
+Build-Depends: boost-smart-ptr, boost-thread, boost-function, boost-date-time, boost-bind, boost-filesystem, boost-random, boost-math, boost-algorithm, gflags, glog, hdf5, lmdb, protobuf, openblas
 Description: Caffe: a fast open framework for deep learning.
 
 Feature: cuda
